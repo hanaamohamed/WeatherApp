@@ -22,7 +22,7 @@ internal class WeatherRepositoryImpl @Inject constructor(
 
     override suspend fun getWeather(city: String) = withContext(ioContext) {
         when (val result =
-            getResult { networkApi.getEndPoints().getWeather(city, BuildConfig.API_KEY) }) {
+            getResult { networkApi.getWeather(city, BuildConfig.API_KEY) }) {
             is ResponseWrapper.Error.BadRequest,
             is ResponseWrapper.Error.Forbidden,
             is ResponseWrapper.Error.NoInternetConnection,
