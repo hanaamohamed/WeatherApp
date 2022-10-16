@@ -25,12 +25,13 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setupList()
-        viewModel.onAttach()
+        viewModel.fetchWeather()
         observeUiState()
 
     }
 
     private fun setupList() {
+        binding.swiperefresh.setOnRefreshListener { viewModel.fetchWeather() }
         binding.citiesWeather.adapter = adapter
     }
 
@@ -40,18 +41,25 @@ class MainActivity : AppCompatActivity() {
                 viewModel.getUiState().collect { uiState ->
                     when (uiState) {
                         WeatherListViewModel.ListUiState.Error -> {
+                            hideRefresh()
                             // show error
                         }
                         WeatherListViewModel.ListUiState.Initial -> Unit
                         is WeatherListViewModel.ListUiState.Loaded -> {
+                            hideRefresh()
                             adapter.updateList(uiState.weatherItemsState)
                         }
                         is WeatherListViewModel.ListUiState.Loading -> {
+                            binding.swiperefresh.isRefreshing = true
                             adapter.updateList(uiState.cities)
                         }
                     }
                 }
             }
         }
+    }
+
+    private fun hideRefresh() {
+        binding.swiperefresh.isRefreshing = false
     }
 }

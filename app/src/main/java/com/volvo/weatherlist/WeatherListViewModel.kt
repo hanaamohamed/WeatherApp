@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.volvo.weatherlist.domain.GetCitiesListUseCase
 import com.volvo.weatherlist.domain.GetCitiesWeatherUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -15,12 +16,15 @@ internal class WeatherListViewModel @Inject constructor(
     private val getCitiesListUseCase: GetCitiesListUseCase,
     private val getCitiesWeatherUseCase: GetCitiesWeatherUseCase,
 ) : ViewModel() {
+    private var job: Job? = null
+
     private val listUiState = MutableStateFlow<ListUiState>(ListUiState.Initial)
 
     fun getUiState() = listUiState.asStateFlow()
-
-    fun onAttach() {
-        viewModelScope.launch {
+    
+    fun fetchWeather() {
+        job?.cancel()
+        job = viewModelScope.launch {
             val cities = getCitiesListUseCase.execute()
             renderCities(cities)
             loadWeather(cities)
