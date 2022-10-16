@@ -8,6 +8,6 @@ internal interface GetWeatherIconUrl {
 
 internal class GetWeatherIconUrlImpl @Inject constructor() : GetWeatherIconUrl {
     override fun execute(iconId: String): String {
-        return "http://openweathermap.org/img/wn/$iconId@2x.png"
+        return "https://openweathermap.org/img/wn/$iconId@2x.png"
     }
 }

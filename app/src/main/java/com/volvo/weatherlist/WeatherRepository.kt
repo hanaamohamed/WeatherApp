@@ -1,6 +1,5 @@
 package com.volvo.weatherlist
 
-import com.data.Weather
 import com.data.WeatherWrapper
 import com.network.NetworkApi
 import com.network.ResponseWrapper
@@ -30,11 +29,11 @@ internal class WeatherRepositoryImpl @Inject constructor(
             is ResponseWrapper.Error.Unknown -> CitySearchResult.Error(city, result.toString())
             is ResponseWrapper.Empty -> CitySearchResult.NotFound
             is ResponseWrapper.Success -> {
-                val weatherInfo = result.body.weather[0]
+                val weatherWrapper = result.body
                 CitySearchResult.SearchResult(
                     city,
-                    weatherInfo,
-                    getWeatherIconUrl.execute(weatherInfo.icon)
+                    weatherWrapper,
+                    getWeatherIconUrl.execute(weatherWrapper.weather[0].icon)
                 )
             }
         }
@@ -45,7 +44,7 @@ internal sealed class CitySearchResult {
     object Loading : CitySearchResult()
     data class SearchResult(
         val city: String,
-        val weather: Weather,
+        val result: WeatherWrapper,
         val weatherIconUrl: String,
     ) : CitySearchResult()
 

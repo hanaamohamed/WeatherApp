@@ -2,7 +2,6 @@ package com.volvo.weatherlist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.data.Weather
 import com.volvo.weatherlist.domain.GetCitiesListUseCase
 import com.volvo.weatherlist.domain.GetCitiesWeatherUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -73,9 +72,7 @@ internal class WeatherListViewModel @Inject constructor(
 
         data class Loading(override val city: String) : WeatherItemState()
         data class Loaded(
-            override val city: String,
-            val weather: Weather,
-            val weatherIconUrl: String
+            override val city: String, val result: CitySearchResult.SearchResult,
         ) : WeatherItemState()
 
         data class Error(override val city: String, val error: String) : WeatherItemState()
@@ -85,7 +82,7 @@ internal class WeatherListViewModel @Inject constructor(
     private fun CitySearchResult.mapToUiState(city: String): WeatherItemState = when (this) {
         is CitySearchResult.Error -> WeatherItemState.Error(city, error)
         CitySearchResult.Loading -> WeatherItemState.Loading(city)
-        is CitySearchResult.SearchResult -> WeatherItemState.Loaded(city, weather, weatherIconUrl)
+        is CitySearchResult.SearchResult -> WeatherItemState.Loaded(city, this)
         CitySearchResult.NotFound -> WeatherItemState.NotFound(city)
     }
 }
