@@ -53,6 +53,9 @@ class MainActivity : AppCompatActivity() {
                             binding.swiperefresh.isRefreshing = true
                             adapter.updateList(uiState.cities)
                         }
+                        WeatherListViewModel.ListUiState.Empty -> {
+                            // todo show empty view
+                        }
                     }
                 }
             }

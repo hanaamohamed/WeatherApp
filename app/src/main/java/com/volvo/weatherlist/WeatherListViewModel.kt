@@ -21,7 +21,7 @@ internal class WeatherListViewModel @Inject constructor(
     private val listUiState = MutableStateFlow<ListUiState>(ListUiState.Initial)
 
     fun getUiState() = listUiState.asStateFlow()
-    
+
     fun fetchWeather() {
         job?.cancel()
         job = viewModelScope.launch {
@@ -32,6 +32,10 @@ internal class WeatherListViewModel @Inject constructor(
     }
 
     private suspend fun loadWeather(cities: List<String>) {
+        if (cities.isEmpty()) {
+            listUiState.value = ListUiState.Empty
+            return
+        }
         val list = mutableListOf<WeatherItemState>()
         val citiesWeatherMap = getCitiesWeatherUseCase.execute(cities)
         citiesWeatherMap.forEach { cityResult ->
@@ -54,6 +58,8 @@ internal class WeatherListViewModel @Inject constructor(
      */
     sealed class ListUiState {
         object Initial : ListUiState()
+
+        object Empty : ListUiState()
 
         /**
          * Loading state with just list of cities and no weather information.
