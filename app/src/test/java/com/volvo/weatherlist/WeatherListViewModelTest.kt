@@ -3,6 +3,7 @@
 package com.volvo.weatherlist
 
 import com.data.mockWeatherWrapper
+import com.volvo.weatherlist.data.CitySearchResult
 import com.volvo.weatherlist.domain.GetCitiesListUseCase
 import com.volvo.weatherlist.domain.GetCitiesWeatherUseCase
 import junit.framework.Assert.assertEquals

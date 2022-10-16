@@ -3,8 +3,8 @@
 package com.volvo.weatherlist.domain
 
 import com.data.mockWeatherWrapper
-import com.volvo.weatherlist.CitySearchResult
-import com.volvo.weatherlist.WeatherRepository
+import com.volvo.weatherlist.data.CitySearchResult
+import com.volvo.weatherlist.data.WeatherRepository
 import junit.framework.Assert.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest

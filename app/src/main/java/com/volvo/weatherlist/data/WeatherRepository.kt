@@ -1,4 +1,4 @@
-package com.volvo.weatherlist
+package com.volvo.weatherlist.data
 
 import com.data.WeatherWrapper
 import com.network.NetworkApi

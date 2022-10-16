@@ -1,7 +1,7 @@
 package com.volvo.weatherlist.di
 
-import com.volvo.weatherlist.WeatherRepository
-import com.volvo.weatherlist.WeatherRepositoryImpl
+import com.volvo.weatherlist.data.WeatherRepository
+import com.volvo.weatherlist.data.WeatherRepositoryImpl
 import com.volvo.weatherlist.domain.*
 import com.volvo.weatherlist.domain.GetCitiesListUseCase
 import com.volvo.weatherlist.domain.GetCitiesListUseCaseImpl

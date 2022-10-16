@@ -1,7 +1,7 @@
 package com.volvo.weatherlist.domain
 
-import com.volvo.weatherlist.CitySearchResult
-import com.volvo.weatherlist.WeatherRepository
+import com.volvo.weatherlist.data.CitySearchResult
+import com.volvo.weatherlist.data.WeatherRepository
 import javax.inject.Inject
 
 internal interface GetCitiesWeatherUseCase {

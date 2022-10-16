@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalCoroutinesApi::class)
 
-package com.volvo.weatherlist
+package com.volvo.weatherlist.data
 
 import com.data.WeatherWrapper
 import com.data.mockWeatherWrapper

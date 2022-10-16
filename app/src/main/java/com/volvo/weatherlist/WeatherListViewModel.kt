@@ -2,6 +2,7 @@ package com.volvo.weatherlist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.volvo.weatherlist.data.CitySearchResult
 import com.volvo.weatherlist.domain.GetCitiesListUseCase
 import com.volvo.weatherlist.domain.GetCitiesWeatherUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
