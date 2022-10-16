@@ -3,7 +3,6 @@ package com.volvo.weatherlist
 import com.data.WeatherWrapper
 import com.network.NetworkApi
 import com.network.ResponseWrapper
-import com.network.getResult
 import com.volvo.BuildConfig
 import com.volvo.weatherlist.domain.GetWeatherIconUrl
 import kotlinx.coroutines.withContext
@@ -21,8 +20,7 @@ internal class WeatherRepositoryImpl @Inject constructor(
 ) : WeatherRepository {
 
     override suspend fun getWeather(city: String) = withContext(ioContext) {
-        when (val result =
-            getResult { networkApi.getWeather(city, BuildConfig.API_KEY) }) {
+        when (val result = networkApi.getWeather(city, BuildConfig.API_KEY)) {
             is ResponseWrapper.Error.BadRequest,
             is ResponseWrapper.Error.Forbidden,
             is ResponseWrapper.Error.NoInternetConnection,

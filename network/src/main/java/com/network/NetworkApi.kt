@@ -3,13 +3,12 @@ package com.network
 import com.data.WeatherWrapper
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Inject
 
 interface NetworkApi {
-    suspend fun getWeather(city: String, appId: String): Response<WeatherWrapper>
+    suspend fun getWeather(city: String, appId: String): ResponseWrapper<WeatherWrapper>
 }
 
 internal class NetworkApiImpl @Inject constructor() : NetworkApi {
@@ -28,7 +27,7 @@ internal class NetworkApiImpl @Inject constructor() : NetworkApi {
             .build()
     }
 
-    override suspend fun getWeather(city: String, appId: String): Response<WeatherWrapper> {
-        return endPoint.getWeather(city, appId)
+    override suspend fun getWeather(city: String, appId: String): ResponseWrapper<WeatherWrapper> {
+        return getResult { endPoint.getWeather(city, appId) }
     }
 }
