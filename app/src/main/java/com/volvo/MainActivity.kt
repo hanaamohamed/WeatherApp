@@ -7,9 +7,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.volvo.databinding.ActivityMainBinding
+import com.volvo.weatherlist.CityWeatherAdapter
 import com.volvo.weatherlist.WeatherListViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -18,12 +18,20 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
+    private val adapter by lazy { CityWeatherAdapter() }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        setupList()
         viewModel.onAttach()
         observeUiState()
+
+    }
+
+    private fun setupList() {
+        binding.citiesWeather.adapter = adapter
     }
 
     private fun observeUiState() {
@@ -31,10 +39,15 @@ class MainActivity : AppCompatActivity() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.getUiState().collect { uiState ->
                     when (uiState) {
-                        WeatherListViewModel.UiState.Empty -> {}
-                        WeatherListViewModel.UiState.Initial -> Unit
-                        is WeatherListViewModel.UiState.Loaded -> {
-                            binding.weatherStatus.text = uiState.weather.description
+                        WeatherListViewModel.ListUiState.Error -> {
+                            // show error
+                        }
+                        WeatherListViewModel.ListUiState.Initial -> Unit
+                        is WeatherListViewModel.ListUiState.Loaded -> {
+                            adapter.updateList(uiState.weatherItemsState)
+                        }
+                        is WeatherListViewModel.ListUiState.Loading -> {
+                            adapter.updateList(uiState.cities)
                         }
                     }
                 }

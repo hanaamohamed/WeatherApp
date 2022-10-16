@@ -3,6 +3,8 @@ package com.volvo.weatherlist
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.data.Weather
+import com.volvo.weatherlist.domain.GetCitiesListUseCase
+import com.volvo.weatherlist.domain.GetCitiesWeatherUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -11,22 +13,79 @@ import javax.inject.Inject
 
 @HiltViewModel
 internal class WeatherListViewModel @Inject constructor(
-    private val repository: WeatherRepository
+    private val getCitiesListUseCase: GetCitiesListUseCase,
+    private val getCitiesWeatherUseCase: GetCitiesWeatherUseCase,
 ) : ViewModel() {
-    private val uiState = MutableStateFlow<UiState>(UiState.Initial)
+    private val listUiState = MutableStateFlow<ListUiState>(ListUiState.Initial)
 
-    fun getUiState() = uiState.asStateFlow()
+    fun getUiState() = listUiState.asStateFlow()
 
     fun onAttach() {
         viewModelScope.launch {
-            val weather = repository.getWeather("Stockholm")
-            uiState.value = weather?.let { UiState.Loaded(it.weather[0]) } ?: UiState.Empty
+            val cities = getCitiesListUseCase.execute()
+            renderCities(cities)
+            loadWeather(cities)
         }
     }
 
-    sealed class UiState {
-        object Initial : UiState()
-        data class Loaded(val weather: Weather) : UiState()
-        object Empty : UiState()
+    private suspend fun loadWeather(cities: List<String>) {
+        val list = mutableListOf<WeatherItemState>()
+        val citiesWeatherMap = getCitiesWeatherUseCase.execute(cities)
+        citiesWeatherMap.forEach { cityResult ->
+            list.add(cityResult.value.mapToUiState(cityResult.key))
+        }
+        listUiState.value = if (list.isNotEmpty()) {
+            ListUiState.Loaded(list)
+        } else {
+            ListUiState.Error
+        }
+    }
+
+    private fun renderCities(cities: List<String>) {
+        val loadingList = cities.map { city -> WeatherItemState.Loading(city) }
+        listUiState.value = ListUiState.Loading(loadingList)
+    }
+
+    /**
+     * Ui state of the list of cities list with their weather.
+     */
+    sealed class ListUiState {
+        object Initial : ListUiState()
+
+        /**
+         * Loading state with just list of cities and no weather information.
+         */
+        data class Loading(val cities: List<WeatherItemState.Loading>) : ListUiState()
+
+        /**
+         * List of [WeatherItemState]
+         */
+        data class Loaded(val weatherItemsState: List<WeatherItemState>) : ListUiState()
+
+        /**
+         * Something went wrong while loading the weather information.
+         */
+        object Error : ListUiState()
+    }
+
+    sealed class WeatherItemState {
+        abstract val city: String
+
+        data class Loading(override val city: String) : WeatherItemState()
+        data class Loaded(
+            override val city: String,
+            val weather: Weather,
+            val weatherIconUrl: String
+        ) : WeatherItemState()
+
+        data class Error(override val city: String, val error: String) : WeatherItemState()
+        data class NotFound(override val city: String) : WeatherItemState()
+    }
+
+    private fun CitySearchResult.mapToUiState(city: String): WeatherItemState = when (this) {
+        is CitySearchResult.Error -> WeatherItemState.Error(city, error)
+        CitySearchResult.Loading -> WeatherItemState.Loading(city)
+        is CitySearchResult.SearchResult -> WeatherItemState.Loaded(city, weather, weatherIconUrl)
+        CitySearchResult.NotFound -> WeatherItemState.NotFound(city)
     }
 }
